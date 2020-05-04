@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+  </head>
+  <body>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      var opponent;
+      function shuffle(a) {
+          var j, x, i;
+          for (i = a.length - 1; i > 0; i--) {
+              j = Math.floor(Math.random() * (i + 1));
+              x = a[i];
+              a[i] = a[j];
+              a[j] = x;
+          }
+          return a;
+      }
+      function sendMessage(opponent) {
+        var arr = [1,2,3,4,5,6,7,8,9]
+        var shuffledArray = shuffle(arr)
+        console.log('Sending Message: ', shuffledArray, 'opponent: ', opponent)
+        socket.emit('game', {
+          opponent: opponent,
+          sortArray: shuffledArray
+        });  
+      }
+
+      var socket = io();
+      socket.emit('join', {room: 'sala 1'});
+
+      socket.on('waiting-room', (msg) => {
+        console.log('waiting-room: ', msg)
+        
+        var button = document.createElement("button");
+        button.innerHTML = "Send Message";
+
+        var body = document.getElementsByTagName("body")[0];
+        body.appendChild(button);
+        button.addEventListener ("click", function() {
+          sendMessage(msg.opponent)
+        });
+      })
+
+      socket.on('game', (msg) => {
+        console.log('Array: ', msg)
+      })
+    </script>
+  </body>
+</html>
